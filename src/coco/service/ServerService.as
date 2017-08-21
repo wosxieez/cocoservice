@@ -214,7 +214,6 @@ package coco.service
 				var ce:ServiceEvent = new ServiceEvent(ServiceEvent.LOG);
 				ce.descript = args.join(" ");
 				dispatchEvent(ce);
-				trace(ce.descript);
 			}
 		}
 		

@@ -216,7 +216,6 @@ package coco.service
 				var ce:ServiceEvent = new ServiceEvent(ServiceEvent.LOG);
 				ce.descript = args.join(" ");
 				dispatchEvent(ce);
-				trace(ce.descript);
 			}
 		}
 		
@@ -245,7 +244,8 @@ package coco.service
 				ce.message = message;
 				ce.descript = "接收消息";
 				
-				log("接收到服务端消息: " + messageString);
+				if (message.messageType != "heart")
+					log("接收到服务端消息: " + messageString);
 			} 
 			catch(error:Error)
 			{

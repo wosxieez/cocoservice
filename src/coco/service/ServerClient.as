@@ -45,7 +45,7 @@ package coco.service
 		{
 			if (!heartChecked)
 			{
-				trace("接收不到客户端心跳 断开");
+				log("接收不到客户端心跳 断开");
 				disposeC2Socket(currentSocket);
 			}
 			else
@@ -187,7 +187,8 @@ package coco.service
 				ce.message = message;
 				ce.descript = "接收消息";
 				
-				log("接收到消息: " + messageString);
+				if (message.messageType != "heart")
+					log("接收到消息: " + messageString);
 			} 
 			catch(error:Error)
 			{
