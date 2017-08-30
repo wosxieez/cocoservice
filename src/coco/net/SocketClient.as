@@ -1,4 +1,4 @@
-package coco.service
+package coco.net
 {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -12,22 +12,23 @@ package coco.service
 	import flash.utils.Timer;
 	
 	import coco.data.Message;
-	import coco.event.ServiceEvent;
+	import coco.event.SocketEvent;
 	
-	[Event(name="connect", type="coco.event.ServiceEvent")]
+	[Event(name="connect", type="coco.event.SocketEvent")]
 	
-	[Event(name="disconnect", type="coco.event.ServiceEvent")]
+	[Event(name="disconnect", type="coco.event.SocketEvent")]
 	
-	[Event(name="message", type="coco.event.ServiceEvent")]
+	[Event(name="message", type="coco.event.SocketEvent")]
 	
-	[Event(name="log", type="coco.event.ServiceEvent")]
+	[Event(name="log", type="coco.event.SocketEvent")]
 	
 	/**
+	 * 客户端Socket
 	 * @author coco
 	 */	
-	public class ClientService extends SocketService
+	public class SocketClient extends SocketDataProcessor
 	{
-		public function ClientService(target:IEventDispatcher=null)
+		public function SocketClient(target:IEventDispatcher=null)
 		{
 			super(target);
 			
@@ -43,14 +44,14 @@ package coco.service
 		//--------------------------------------------------------------------------
 		
 		private static var inRightWay:Boolean = false;
-		private static var instance:ClientService;
+		private static var instance:SocketClient;
 		
-		public static function getInstance():ClientService
+		public static function getInstance():SocketClient
 		{
 			inRightWay = true;
 			
 			if (!instance)
-				instance = new ClientService();
+				instance = new SocketClient();
 			
 			return instance;
 		}
@@ -164,7 +165,7 @@ package coco.service
 		protected function c2Socket_connectHandler(event:Event):void
 		{
 			log("服务端已连接");
-			var ce:ServiceEvent = new ServiceEvent(ServiceEvent.CONNECT);
+			var ce:SocketEvent = new SocketEvent(SocketEvent.CONNECT);
 			dispatchEvent(ce);
 		}
 		
@@ -183,7 +184,7 @@ package coco.service
 			disposeC2Socket();
 			
 			log("服务端已断开");
-			var ce:ServiceEvent = new ServiceEvent(ServiceEvent.DISCONNECT);
+			var ce:SocketEvent = new SocketEvent(SocketEvent.DISCONNECT);
 			dispatchEvent(ce);
 		}
 		
@@ -213,7 +214,7 @@ package coco.service
 			if (arg.length > 0)
 			{
 				arg[0] = "[Socket通信服务] " + arg[0];
-				var ce:ServiceEvent = new ServiceEvent(ServiceEvent.LOG);
+				var ce:SocketEvent = new SocketEvent(SocketEvent.LOG);
 				ce.descript = args.join(" ");
 				dispatchEvent(ce);
 			}
@@ -228,7 +229,7 @@ package coco.service
 		
 		override protected function receiveMessage(messageString:String):void
 		{
-			var ce:ServiceEvent;
+			var ce:SocketEvent;
 			try
 			{
 				// 将json字符串 转换为消息
@@ -240,7 +241,7 @@ package coco.service
 				message.messageType = messageObject.messageType;
 				message.messageContent = messageObject.messageContent;
 				
-				ce = new ServiceEvent(ServiceEvent.MESSAGE);
+				ce = new SocketEvent(SocketEvent.MESSAGE);
 				ce.message = message;
 				ce.descript = "接收消息";
 				
@@ -250,7 +251,7 @@ package coco.service
 			catch(error:Error)
 			{
 				log("解析消息包失败 " + message);
-				ce = new ServiceEvent(ServiceEvent.LOG);
+				ce = new SocketEvent(SocketEvent.LOG);
 				ce.descript = error.message;
 			}
 			

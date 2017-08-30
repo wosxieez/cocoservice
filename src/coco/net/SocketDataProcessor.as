@@ -1,13 +1,13 @@
-package coco.service
+package coco.net
 {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.utils.ByteArray;
 	
 	[ExcludeClass]
-	public class SocketService extends EventDispatcher
+	public class SocketDataProcessor extends EventDispatcher
 	{
-		public function SocketService(target:IEventDispatcher=null)
+		public function SocketDataProcessor(target:IEventDispatcher=null)
 		{
 			super(target);
 		}

@@ -1,4 +1,4 @@
-package coco.service
+package coco.net
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -10,18 +10,18 @@ package coco.service
 	import flash.net.Socket;
 	import flash.utils.Timer;
 	
-	import coco.event.ServiceEvent;
+	import coco.event.SocketEvent;
 	
-	[Event(name="connect", type="coco.event.ServiceEvent")]
+	[Event(name="connect", type="coco.event.SocketEvent")]
 	
-	[Event(name="log", type="coco.event.ServiceEvent")]
+	[Event(name="log", type="coco.event.SocketEvent")]
 	
 	/**
 	 * @author coco
 	 */	
-	public class ServerService extends EventDispatcher
+	public class SocketServer extends EventDispatcher
 	{
-		public function ServerService(target:IEventDispatcher=null)
+		public function SocketServer(target:IEventDispatcher=null)
 		{
 			super(target);
 			
@@ -37,14 +37,14 @@ package coco.service
 		//--------------------------------------------------------------------------
 		
 		private static var inRightWay:Boolean = false;
-		private static var instance:ServerService;
+		private static var instance:coco.net.SocketServer;
 		
-		public static function getInstance():ServerService
+		public static function getInstance():coco.net.SocketServer
 		{
 			inRightWay = true;
 			
 			if (!instance)
-				instance = new ServerService();
+				instance = new coco.net.SocketServer();
 			
 			return instance;
 		}
@@ -184,8 +184,8 @@ package coco.service
 		
 		private function initC2Socket(c2Socket:Socket):void
 		{
-			var connectEvent:ServiceEvent = new ServiceEvent(ServiceEvent.CONNECT);
-			connectEvent.client = new ServerClient(c2Socket);
+			var connectEvent:SocketEvent = new SocketEvent(SocketEvent.CONNECT);
+			connectEvent.client = new SocketServerClient(c2Socket);
 			dispatchEvent(connectEvent);
 		}
 		
@@ -211,7 +211,7 @@ package coco.service
 			if (arg.length > 0)
 			{
 				arg[0] = "[Socket通信服务] " + arg[0];
-				var ce:ServiceEvent = new ServiceEvent(ServiceEvent.LOG);
+				var ce:SocketEvent = new SocketEvent(SocketEvent.LOG);
 				ce.descript = args.join(" ");
 				dispatchEvent(ce);
 			}
@@ -226,7 +226,7 @@ package coco.service
 		private var policyFile:String =
 			'<cross-domain-policy>' +
 			'<site-control permitted-cross-domain-policies="master-only"/>' +
-			'<allow-access-from domain="*" to-ports="12016"/>' +
+			'<allow-access-from domain="*" to-ports="' + currentPort + '"/>' +
 			'</cross-domain-policy> ';
 		
 		private var policySocket:Socket;

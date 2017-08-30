@@ -1,4 +1,4 @@
-package coco.service
+package coco.net
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -11,22 +11,22 @@ package coco.service
 	import flash.utils.Timer;
 	
 	import coco.data.Message;
-	import coco.event.ServiceEvent;
+	import coco.event.SocketEvent;
 	
-	[Event(name="disconnect", type="coco.event.ServiceEvent")]
+	[Event(name="disconnect", type="coco.event.SocketEvent")]
 	
-	[Event(name="message", type="coco.event.ServiceEvent")]
+	[Event(name="message", type="coco.event.SocketEvent")]
 	
-	[Event(name="log", type="coco.event.ServiceEvent")]
+	[Event(name="log", type="coco.event.SocketEvent")]
 	
-	public class ServerClient extends EventDispatcher
+	public class SocketServerClient extends EventDispatcher
 	{
 		
 		private var heartTimer:Timer;
 		private var currentSocket:Socket;
 		private var heartChecked:Boolean;
 		
-		public function ServerClient(c2Socket:Socket)
+		public function SocketServerClient(c2Socket:Socket)
 		{
 			currentSocket = c2Socket;
 			
@@ -111,7 +111,7 @@ package coco.service
 				}
 			}
 			
-			var ce:ServiceEvent = new ServiceEvent(ServiceEvent.DISCONNECT);
+			var ce:SocketEvent = new SocketEvent(SocketEvent.DISCONNECT);
 			dispatchEvent(ce);
 			
 			if (heartTimer)
@@ -171,7 +171,7 @@ package coco.service
 		
 		private function receiveMessage(messageString:String):void
 		{
-			var ce:ServiceEvent;
+			var ce:SocketEvent;
 			try
 			{
 				// 将json字符串 转换为消息
@@ -183,7 +183,7 @@ package coco.service
 				message.messageType = messageObject.messageType;
 				message.messageContent = messageObject.messageContent;
 				
-				ce = new ServiceEvent(ServiceEvent.MESSAGE);
+				ce = new SocketEvent(SocketEvent.MESSAGE);
 				ce.message = message;
 				ce.descript = "接收消息";
 				
@@ -193,7 +193,7 @@ package coco.service
 			catch(error:Error)
 			{
 				log("接收到客户端消息: 解析消息包失败," + messageString);
-				ce = new ServiceEvent(ServiceEvent.LOG);
+				ce = new SocketEvent(SocketEvent.LOG);
 				ce.descript = error.message;
 			}
 			
@@ -250,7 +250,7 @@ package coco.service
 			if (arg.length > 0)
 			{
 				arg[0] = "[Socket通信服务] " + arg[0];
-				var ce:ServiceEvent = new ServiceEvent(ServiceEvent.LOG);
+				var ce:SocketEvent = new SocketEvent(SocketEvent.LOG);
 				ce.descript = args.join(" ");
 				dispatchEvent(ce);
 			}

@@ -3,9 +3,9 @@ package coco.event
 	import flash.events.Event;
 	
 	import coco.data.Message;
-	import coco.service.ServerClient;
+	import coco.net.SocketServerClient;
 	
-	public class ServiceEvent extends Event
+	public class SocketEvent extends Event
 	{
 		
 		/**
@@ -25,7 +25,7 @@ package coco.event
 		 */		
 		public static const LOG:String = "log";
 		
-		public function ServiceEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
+		public function SocketEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 		}
@@ -34,7 +34,7 @@ package coco.event
 		
 		public var descript:String;
 		
-		public var client:ServerClient;
+		public var client:SocketServerClient;
 		
 	}
 }
