@@ -53,7 +53,7 @@ package coco.net
 				// 发送心跳
 				heartChecked = false;
 				var heartMessage:Message = new Message();
-				heartMessage.messageType = "heart";
+				heartMessage.type = "heart";
 				send(heartMessage);
 			}
 		}
@@ -176,18 +176,18 @@ package coco.net
 			{
 				// 将json字符串 转换为消息
 				//	Message
-				//		messaegType
-				//		messageContent
+				//		type
+				//		content
 				var messageObject:Object = JSON.parse(messageString);
 				var message:Message = new Message();
-				message.messageType = messageObject.messageType;
-				message.messageContent = messageObject.messageContent;
+				message.type = messageObject.type;
+				message.content = messageObject.content;
 				
 				ce = new SocketEvent(SocketEvent.MESSAGE);
 				ce.message = message;
 				ce.descript = "接收消息";
 				
-				if (message.messageType != "heart")
+				if (message.type != "heart")
 					log("接收到消息: " + messageString);
 			} 
 			catch(error:Error)
@@ -197,7 +197,7 @@ package coco.net
 				ce.descript = error.message;
 			}
 			
-			if (ce.message.messageType == "heart")
+			if (ce.message.type == "heart")
 			{
 				heartChecked = true;
 			}
@@ -222,7 +222,7 @@ package coco.net
 			}
 			
 			var messageJsonString:String = JSON.stringify(message);
-			if (message.messageType != "heart")
+			if (message.type != "heart")
 				log("给客户端发送消息：" + messageJsonString);
 			var messageBytes:ByteArray = new ByteArray();
 			messageBytes.writeUTFBytes(messageJsonString);

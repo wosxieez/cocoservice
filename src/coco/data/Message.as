@@ -13,11 +13,11 @@ package coco.data
 		/**
 		 * 消息类型 
 		 */		
-		public var messageType:String;
+		public var type:String;
 		
 		/**
 		 * 消息内容 
 		 */		
-		public var messageContent:*;
+		public var content:*;
 	}
 }
