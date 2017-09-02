@@ -80,17 +80,20 @@ package coco.net
 			initC1PolicySocket();
 			initC1Socket();
 			
-			// 30s检查一次服务情况
-			checkTimer = new Timer(30000);
+			// 60s检查一次服务情况
+			checkTimer = new Timer(60000);
 			checkTimer.addEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
 			checkTimer.start();
 		}
 		
 		public function dispose():void
 		{
-			checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
-			checkTimer.stop();
-			checkTimer = null;
+			if (checkTimer)
+			{
+				checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
+				checkTimer.stop();
+				checkTimer = null;
+			}
 			
 			disposeC1Socket();
 			disposeC1PolicySocket();

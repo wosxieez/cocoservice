@@ -43,7 +43,7 @@ package coco.net
 			c2Socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, c2Socket_securityErrorHandler);
 			
 			heartChecked = true;
-			heartTimer = new Timer(5000);
+			heartTimer = new Timer(10000);
 			heartTimer.addEventListener(TimerEvent.TIMER, onTimerHandler);
 			heartTimer.start();
 		}
@@ -197,15 +197,17 @@ package coco.net
 				
 				ce = new SocketEvent(SocketEvent.MESSAGE);
 				ce.message = message;
+				ce.client = this;
 				ce.descript = "接收消息";
 				
-				if (message.type != "heart")
-					log("接收到消息: " + messageString);
+				//				if (message.type != "heart")
+				log("接收到消息: " + messageString);
 			} 
 			catch(error:Error)
 			{
 				log("接收到客户端消息: 解析消息包失败," + messageString);
 				ce = new SocketEvent(SocketEvent.LOG);
+				ce.client = this;
 				ce.descript = error.message;
 			}
 			
@@ -264,6 +266,7 @@ package coco.net
 				arg[0] = "[Socket通信服务] " + arg[0];
 				var ce:SocketEvent = new SocketEvent(SocketEvent.LOG);
 				ce.descript = args.join(" ");
+				ce.client = this;
 				dispatchEvent(ce);
 			}
 		}

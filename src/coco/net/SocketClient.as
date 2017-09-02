@@ -87,8 +87,8 @@ package coco.net
 			currentPort = port;
 			currentPolicyPort = policyPort;
 			
-			// 30s检查一次连接情况
-			checkTimer = new Timer(30000);
+			// 60s检查一次连接情况
+			checkTimer = new Timer(60000);
 			checkTimer.addEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
 			checkTimer.start();
 			
@@ -99,9 +99,12 @@ package coco.net
 		
 		public function dispose():void
 		{
-			checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
-			checkTimer.stop();
-			checkTimer = null;
+			if (checkTimer)
+			{
+				checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
+				checkTimer.stop();
+				checkTimer = null;
+			}
 			
 			disposeC2Socket();
 		}
@@ -245,8 +248,8 @@ package coco.net
 				ce.message = message;
 				ce.descript = "接收消息";
 				
-				if (message.type != "heart")
-					log("接收到服务端消息: " + messageString);
+				//				if (message.type != "heart")
+				log("接收到服务端消息: " + messageString);
 			} 
 			catch(error:Error)
 			{
