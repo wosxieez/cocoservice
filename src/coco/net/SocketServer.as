@@ -17,7 +17,7 @@ package coco.net
 	[Event(name="log", type="coco.event.SocketEvent")]
 	
 	/**
-	 * @author coco
+	 * Socket服务端 
 	 */	
 	public class SocketServer extends EventDispatcher
 	{
@@ -186,6 +186,7 @@ package coco.net
 		{
 			var connectEvent:SocketEvent = new SocketEvent(SocketEvent.CONNECT);
 			connectEvent.client = new SocketServerClient(c2Socket);
+			log("客户端已连接: " + connectEvent.client.id);
 			dispatchEvent(connectEvent);
 		}
 		

@@ -19,16 +19,23 @@ package coco.net
 	
 	[Event(name="log", type="coco.event.SocketEvent")]
 	
+	/**
+	 * 服务端的客户端连接 
+	 */	
 	public class SocketServerClient extends EventDispatcher
 	{
 		
 		private var heartTimer:Timer;
-		private var currentSocket:Socket;
 		private var heartChecked:Boolean;
+		private var socket:Socket;
+		
+		public var id:String;
 		
 		public function SocketServerClient(c2Socket:Socket)
 		{
-			currentSocket = c2Socket;
+			socket = c2Socket;
+			
+			id = socket.remoteAddress + ":" + socket.remotePort;
 			
 			c2Socket.addEventListener(Event.CLOSE, c2Socket_closeHandler);
 			c2Socket.addEventListener(ProgressEvent.SOCKET_DATA, c2Socket_dataHandler);
@@ -41,12 +48,20 @@ package coco.net
 			heartTimer.start();
 		}
 		
+		/**
+		 * 关闭连接
+		 */		
+		public function close():void
+		{
+			disposeC2Socket(socket);
+		}
+		
 		protected function onTimerHandler(event:TimerEvent):void
 		{
 			if (!heartChecked)
 			{
 				log("接收不到客户端心跳 断开");
-				disposeC2Socket(currentSocket);
+				disposeC2Socket(socket);
 			}
 			else
 			{
@@ -74,22 +89,20 @@ package coco.net
 			processSocketPacket();
 		}
 		
-		
 		protected function c2Socket_closeHandler(event:Event):void
 		{
-			disposeC2Socket(event.currentTarget as Socket);
+			disposeC2Socket(socket);
 		}
 		
 		protected function c2Socket_securityErrorHandler(event:SecurityErrorEvent):void
 		{
-			//			log("安全错误," + event.text);c2Socket_closeHandler
+			disposeC2Socket(socket);
 		}
 		
 		protected function c2Socket_ioErrorHandler(event:IOErrorEvent):void
 		{
-			//			log("IO错误," + event.text);
+			disposeC2Socket(socket);
 		}
-		
 		
 		private function disposeC2Socket(c2Socket:Socket):void
 		{
@@ -97,27 +110,26 @@ package coco.net
 			{
 				try
 				{
+					log("客户端已断开: " + id);
+					
 					c2Socket.removeEventListener(Event.CLOSE, c2Socket_closeHandler);
 					c2Socket.removeEventListener(ProgressEvent.SOCKET_DATA, c2Socket_dataHandler);
 					c2Socket.removeEventListener(IOErrorEvent.IO_ERROR, c2Socket_ioErrorHandler);
 					c2Socket.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, c2Socket_securityErrorHandler);
 					c2Socket.close();
-					c2Socket = null;
-					//					log("释放C2Socket成功");
 				} 
 				catch(error:Error) 
 				{
-					//					log("释放C2Socket失败" + error.message);
 				}
 			}
 			
 			var ce:SocketEvent = new SocketEvent(SocketEvent.DISCONNECT);
+			ce.client = this;
 			dispatchEvent(ce);
 			
 			if (heartTimer)
 				heartTimer.stop();
 		}
-		
 		
 		//----------------------------------------------------------------------------------------------------------------
 		//
@@ -215,7 +227,7 @@ package coco.net
 		
 		public function send(message:Message):void
 		{
-			if (!currentSocket || !currentSocket.connected)
+			if (!socket || !socket.connected)
 			{
 				log("客户端端未连接，无法发送消息");
 				return;
@@ -233,9 +245,9 @@ package coco.net
 			{
 				packetLengthString = "0" + packetLengthString;
 			}
-			currentSocket.writeUTFBytes(packetLengthString);
-			currentSocket.writeBytes(messageBytes);
-			currentSocket.flush();
+			socket.writeUTFBytes(packetLengthString);
+			socket.writeBytes(messageBytes);
+			socket.flush();
 		}
 		
 		//----------------------------------------------------------------------------------------------------------------
