@@ -63,6 +63,7 @@ package coco.net
 		//
 		//----------------------------------------------------------------------------------------------------------------
 		
+		private var initialized:Boolean = false;
 		private var c1Socket:ServerSocket;
 		private var c1PolicySocket:ServerSocket;
 		private var checkTimer:Timer;
@@ -70,10 +71,13 @@ package coco.net
 		private var currentPort:int;
 		
 		/**
-		 * 服务器初始化 
+		 * 服务器启动
 		 */		
-		public function init(port:int = 12016, policyPort:int = 12015):void
+		public function start(port:int = 12016, policyPort:int = 12015):void
 		{
+			if (initialized) return;
+			initialized = true;
+			
 			currentPort = port;
 			currentPolicyPort = policyPort;
 			
@@ -86,8 +90,14 @@ package coco.net
 			checkTimer.start();
 		}
 		
-		public function dispose():void
+		/**
+		 * 服务器停止 
+		 */		
+		public function stop():void
 		{
+			if (!initialized) return;
+			initialized = false;
+			
 			if (checkTimer)
 			{
 				checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
@@ -189,7 +199,7 @@ package coco.net
 		{
 			var connectEvent:SocketEvent = new SocketEvent(SocketEvent.CONNECT);
 			connectEvent.client = new SocketServerClient(c2Socket);
-			log("客户端已连接: " + connectEvent.client.id);
+			log("客户端已连接: " + connectEvent.client.remoteAddress + ":" + connectEvent.client.remotePort);
 			dispatchEvent(connectEvent);
 		}
 		

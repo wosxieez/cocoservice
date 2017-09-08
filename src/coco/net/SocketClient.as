@@ -74,16 +74,27 @@ package coco.net
 		//
 		//----------------------------------------------------------------------------------------------------------------
 		
+		private var initialized:Boolean = false;
 		private var serverHost:String;
 		private var c2Socket:Socket;
 		private var checkTimer:Timer;
 		private var currentPolicyPort:int;
 		private var currentPort:int;
 		
-		public function init(host:String = "localhost", 
-							 port:int = 12016, 
-							 policyPort:int = 12015):void
+		/**
+		 * 连接服务器
+		 *  
+		 * @param host
+		 * @param port
+		 * @param policyPort
+		 */		
+		public function connect(host:String = "localhost", 
+								port:int = 12016, 
+								policyPort:int = 12015):void
 		{
+			if (initialized) return;
+			initialized = true;
+			
 			currentPort = port;
 			currentPolicyPort = policyPort;
 			
@@ -94,11 +105,14 @@ package coco.net
 			
 			serverHost = host;
 			
-			tryLogin();
+			reconnect();
 		}
 		
-		public function dispose():void
+		public function disconnect():void
 		{
+			if (!initialized) return;
+			initialized = false;
+			
 			if (checkTimer)
 			{
 				checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
@@ -109,9 +123,12 @@ package coco.net
 			disposeC2Socket();
 		}
 		
-		private function tryLogin():void
+		/**
+		 * 重连服务器
+		 */		
+		public function reconnect():void
 		{
-			if (!connected)
+			if (initialized && !connected)
 			{
 				initC2Socket();
 				log("开始加载策略文件..." + serverHost + ":" + currentPolicyPort);
@@ -126,7 +143,7 @@ package coco.net
 			if (!connected)
 			{
 				log("检测到服务端已断开...尝试重新连接");
-				tryLogin();
+				reconnect();
 			}
 		}
 		
@@ -248,8 +265,8 @@ package coco.net
 				ce.message = message;
 				ce.descript = "接收消息";
 				
-				//				if (message.type != "heart")
-				log("接收到服务端消息: " + messageString);
+				if (message.type != "heart")
+					log("接收到服务端消息: " + messageString);
 			} 
 			catch(error:Error)
 			{

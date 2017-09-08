@@ -29,13 +29,15 @@ package coco.net
 		private var heartChecked:Boolean;
 		private var socket:Socket;
 		
-		public var id:String;
+		public var remoteAddress:String;
+		public var remotePort:int;
 		
 		public function SocketServerClient(c2Socket:Socket)
 		{
 			socket = c2Socket;
 			
-			id = socket.remoteAddress + ":" + socket.remotePort;
+			remoteAddress = socket.remoteAddress;
+			remotePort = socket.remotePort;
 			
 			c2Socket.addEventListener(Event.CLOSE, c2Socket_closeHandler);
 			c2Socket.addEventListener(ProgressEvent.SOCKET_DATA, c2Socket_dataHandler);
@@ -110,7 +112,7 @@ package coco.net
 			{
 				try
 				{
-					log("客户端已断开: " + id);
+					log("客户端已断开: " + remoteAddress + ":" + remotePort);
 					
 					c2Socket.removeEventListener(Event.CLOSE, c2Socket_closeHandler);
 					c2Socket.removeEventListener(ProgressEvent.SOCKET_DATA, c2Socket_dataHandler);
@@ -200,8 +202,8 @@ package coco.net
 				ce.client = this;
 				ce.descript = "接收消息";
 				
-				//				if (message.type != "heart")
-				log("接收到消息: " + messageString);
+				if (message.type != "heart")
+					log("接收到消息: " + messageString);
 			} 
 			catch(error:Error)
 			{
