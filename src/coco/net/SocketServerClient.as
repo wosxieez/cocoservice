@@ -1,5 +1,8 @@
 package coco.net
 {
+	import coco.data.Message;
+	import coco.event.SocketEvent;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -9,9 +12,6 @@ package coco.net
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
 	import flash.utils.Timer;
-	
-	import coco.data.Message;
-	import coco.event.SocketEvent;
 	
 	[Event(name="disconnect", type="coco.event.SocketEvent")]
 	
@@ -45,7 +45,7 @@ package coco.net
 			c2Socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, c2Socket_securityErrorHandler);
 			
 			heartChecked = true;
-			heartTimer = new Timer(10000);
+			heartTimer = new Timer(30000);
 			heartTimer.addEventListener(TimerEvent.TIMER, onTimerHandler);
 			heartTimer.start();
 		}
