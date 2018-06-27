@@ -123,7 +123,7 @@ package coco.net {
 				c1PolicySocket.addEventListener(ServerSocketConnectEvent.CONNECT, c1PolicySocket_connectHandler);
 				c1PolicySocket.bind(currentPolicyPort);
 				c1PolicySocket.listen();
-				log("启动策略服务成功");
+				log("启动策略服务成功", currentPolicyPort);
 			}
 			catch (error:Error) {
 				log("启动策略服务失败," + error.message);
@@ -151,7 +151,7 @@ package coco.net {
 				c1Socket.addEventListener(Event.CLOSE, c1Socket_closeHandler);
 				c1Socket.bind(currentPort);
 				c1Socket.listen();
-				log("启动服务成功");
+				log("启动服务成功", currentPort);
 			}
 			catch (error:Error) {
 				log("启动服务失败," + error.message);

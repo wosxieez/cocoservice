@@ -5,11 +5,9 @@ package coco.net
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.events.TimerEvent;
 	import flash.net.Socket;
 	import flash.system.Security;
 	import flash.utils.ByteArray;
-	import flash.utils.Timer;
 	
 	import coco.data.Message;
 	import coco.event.SocketEvent;
@@ -77,7 +75,7 @@ package coco.net
 		private var initialized:Boolean = false;
 		private var serverHost:String;
 		private var c2Socket:Socket;
-		private var checkTimer:Timer;
+//		private var checkTimer:Timer;
 		private var currentPolicyPort:int;
 		private var currentPort:int;
 		
@@ -99,9 +97,9 @@ package coco.net
 			currentPolicyPort = policyPort;
 			
 			// 60s检查一次连接情况
-			checkTimer = new Timer(60000);
-			checkTimer.addEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
-			checkTimer.start();
+//			checkTimer = new Timer(60000);
+//			checkTimer.addEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
+//			checkTimer.start();
 			
 			serverHost = host;
 			
@@ -113,14 +111,19 @@ package coco.net
 			if (!initialized) return;
 			initialized = false;
 			
-			if (checkTimer)
-			{
-				checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
-				checkTimer.stop();
-				checkTimer = null;
-			}
+//			if (checkTimer)
+//			{
+//				checkTimer.removeEventListener(TimerEvent.TIMER, checkTimer_timerHandler);
+//				checkTimer.stop();
+//				checkTimer = null;
+//			}
 			
 			disposeC2Socket();
+			
+			log("服务端已断开");
+			var ce:SocketEvent = new SocketEvent(SocketEvent.DISCONNECT);
+			ce.descript = "服务端已断开";
+			dispatchEvent(ce);
 		}
 		
 		/**
@@ -138,14 +141,14 @@ package coco.net
 			}
 		}
 		
-		private function checkTimer_timerHandler(e:TimerEvent):void
-		{
-			if (!connected)
-			{
-				log("检测到服务端已断开...尝试重新连接");
-				reconnect();
-			}
-		}
+//		private function checkTimer_timerHandler(e:TimerEvent):void
+//		{
+//			if (!connected)
+//			{
+//				log("检测到服务端已断开...尝试重新连接");
+//				reconnect();
+//			}
+//		}
 		
 		private function initC2Socket():void
 		{
@@ -186,6 +189,7 @@ package coco.net
 		{
 			log("服务端已连接");
 			var ce:SocketEvent = new SocketEvent(SocketEvent.CONNECT);
+			ce.descript = "服务端已连接";
 			dispatchEvent(ce);
 		}
 		
@@ -200,16 +204,19 @@ package coco.net
 		
 		protected function c2Socket_closeHandler(event:Event):void
 		{
+			initialized = false;
 			// 释放socket
 			disposeC2Socket();
 			
 			log("服务端已断开");
 			var ce:SocketEvent = new SocketEvent(SocketEvent.DISCONNECT);
+			ce.descript = "服务端已断开";
 			dispatchEvent(ce);
 		}
 		
 		protected function c2Socket_securityErrorHandler(event:SecurityErrorEvent):void
 		{
+			initialized = false;
 			// 释放socket
 			disposeC2Socket();
 			log("安全错误" + event.text);
@@ -217,6 +224,7 @@ package coco.net
 		
 		protected function c2Socket_ioErrorHandler(event:IOErrorEvent):void
 		{
+			initialized = false;
 			// 释放socket
 			disposeC2Socket();
 			log("IO错误 " + event.text);
